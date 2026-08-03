@@ -1,0 +1,1 @@
+uv run flask --app api.main run --reload --debug

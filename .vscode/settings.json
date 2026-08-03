@@ -1,0 +1,8 @@
+{
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "python.analysis.extraPaths": [
+        "./backend"
+    ]
+}

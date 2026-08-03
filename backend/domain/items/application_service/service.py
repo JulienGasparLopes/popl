@@ -1,0 +1,35 @@
+from connectors.mongo_connector import MongoConnector
+from domain.items.model.item import Item
+from domain.items.ports.service import ItemFilters, ItemServicePort
+
+
+class ItemService(ItemServicePort):
+    def __init__(self, *, mongo_connector: MongoConnector):
+        self._mongo_conn = mongo_connector
+        self._repository = self._mongo_conn.get_collection("items")
+
+    def get_items(self, *, filters: ItemFilters) -> list[Item]:
+        query_filters = {}
+        if filters.rarity is not None:
+            query_filters["rarity"] = {"$in": list(filters.rarity)}
+        print(filters.item_class)
+        if filters.item_class is not None:
+            query_filters["item_class"] = {"$in": list(filters.item_class)}
+
+        print(query_filters)
+
+        raw_items = self._repository.find(query_filters)
+
+        return [Item.model_validate(raw_item, by_name=True) for raw_item in raw_items]
+
+    def add_item(self, *, item: Item) -> None:
+        _result = self._repository.update_one(
+            {"name": item.name},
+            {"$set": item.model_dump(exclude={"id"})},
+            upsert=True,
+        )
+        # return _result.upserted_id
+
+
+def make_item_service() -> ItemServicePort:
+    return ItemService(mongo_connector=MongoConnector())
