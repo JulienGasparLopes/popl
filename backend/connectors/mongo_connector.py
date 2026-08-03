@@ -15,8 +15,6 @@ class MongoConnector:
 
         uri = f"mongodb+srv://{username}:{password}@{cluster_url}/?appName={app_name}"
 
-        print(uri)
-
         self.client = MongoClient(uri)
         self.database = self.client.get_database("popl")
 
