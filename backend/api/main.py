@@ -24,7 +24,7 @@ def get_all_users() -> list[dict[str, Any]]:
     )
 
     return {
-        "items": [item.model_dump_json() for item in items],
+        "items": [item.model_dump() for item in items],
         "count": len(items),
     }, 200
 
@@ -35,4 +35,4 @@ def get_all_item_class() -> list[dict[str, Any]]:
     item_service = cast(ItemService, item_service)
     item_classes = item_service._repository.distinct("item_class")
 
-    return item_classes, 200
+    return {"item_classes": item_classes}, 200
