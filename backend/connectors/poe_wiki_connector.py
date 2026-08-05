@@ -8,7 +8,7 @@ from log import get_logger
 
 logger = get_logger(__name__)
 
-BASE_URL = "https://www.poewiki.net/w/api.php"
+_BASE_URL = "https://www.poewiki.net/w/api.php"
 
 type JsonObj = dict[str, Any]
 
@@ -51,7 +51,7 @@ class PoeWikiConnetor:
                 where_queries.append(f'{key}="{value}"')
             params["where"] = " AND ".join(where_queries)
 
-        response = requests.get(BASE_URL, params=params)
+        response = requests.get(_BASE_URL, params=params)
         if not response.ok:
             raise RuntimeError(
                 f"Unable to retrieve data on PoE Wiki: {response.status_code} - {response.reason}"

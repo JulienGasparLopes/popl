@@ -8,17 +8,11 @@
             "name": "Debug backend module",
             "type": "debugpy",
             "request": "launch",
-            "module": "scripts.sync_unique_items",
+            "module": "scripts.decode_pob",
             "cwd": "${workspaceFolder}/backend",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/backend"
             }
-        },
-        {
-            "name": "Python Debugger: Attach using Process Id",
-            "type": "debugpy",
-            "request": "attach",
-            "processId": "${command:pickProcess}"
         }
     ]
 }
