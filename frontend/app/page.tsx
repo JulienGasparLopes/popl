@@ -4,13 +4,10 @@ export default async function Home() {
 
   const itemsByClass = items.reduce((acc, item) => {
     const values = acc?.[item.item_class] || [];
-    console.log(values);
     values.push(item);
     acc[item.item_class] = values;
     return acc;
   }, {});
-
-  console.log(itemsByClass);
 
   return (
     <main>

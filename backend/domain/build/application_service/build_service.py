@@ -1,14 +1,17 @@
 import base64
+import uuid
 import zlib
 from typing import Any
 from xml.etree import ElementTree
 
+from connectors.mongo_connector import MongoConnector
 from domain.build.model.build import Build, CharacterAttributes, Equipment
 from domain.build.ports.build_service import BuildServicePort
 from log import get_logger
 
 logger = get_logger(__name__)
 
+_OUTPUT_TO_FILE = True
 
 ITEM_SLOT_TO_EQUIPMENT_ATTR = {
     "Ring 1": "left_ring",
@@ -31,10 +34,51 @@ ITEM_SLOT_TO_EQUIPMENT_ATTR = {
 
 
 class BuildService(BuildServicePort):
-    def parse_pob_code(self, *, pob_code: str) -> Build:
+
+    def __init__(self):
+        conn = MongoConnector()
+        self._repository = conn.get_collection("builds")
+
+    def get_builds(self, *, build_id: str | None = None) -> list[Build]:
+        filters = {}
+        if build_id is not None:
+            filters["id"] = build_id
+        raw_builds = self._repository.find(filters)
+        return [Build.model_validate(raw_build) for raw_build in raw_builds]
+
+    def save_build(self, *, build: Build) -> str:
+        self._repository.insert_one(
+            {**build.model_dump(exclude=["id"]), "id": str(build.id)}
+        )
+
+    def get_build_sets_from_pob_code(self, *, pob_code: str) -> dict[str, str]:
         base64_decode = base64.urlsafe_b64decode(pob_code)
         decompressed_xml = zlib.decompress(base64_decode).decode("utf-8")
         xml_obj = ElementTree.fromstring(decompressed_xml)
+        item_set_tags = xml_obj.findall("Items/ItemSet")
+
+        if len(item_set_tags) == 1 and "title" not in item_set_tags[0].attrib:
+            return {item_set_tags[0].attrib["id"]: "popl_default_item_set_tag"}
+
+        return {
+            item_set_tag.attrib["id"]: item_set_tag.attrib["title"]
+            for item_set_tag in item_set_tags
+        }
+
+    def parse_pob_code(self, *, pob_code: str, build_set_id: str) -> Build:
+        base64_decode = base64.urlsafe_b64decode(pob_code)
+        decompressed_xml = zlib.decompress(base64_decode).decode("utf-8")
+
+        if _OUTPUT_TO_FILE:
+            with open("scripts/output.xml", mode="w") as f:
+                f.write(decompressed_xml)
+            logger.info("Saved to file output.xml")
+
+        xml_obj = ElementTree.fromstring(decompressed_xml)
+
+        build_tag = xml_obj.find("Build")
+        character_class = build_tag.attrib["className"]
+        character_ascendancy = build_tag.attrib["ascendClassName"]
 
         def get_stat(stat_name: str) -> Any:
             return xml_obj.find(f'Build/PlayerStat[@stat="{stat_name}"]').attrib[
@@ -66,12 +110,8 @@ class BuildService(BuildServicePort):
 
         item_id_to_slot_name = {}
 
-        item_set_tags = xml_obj.findall("Items/ItemSet")
-        item_set_tag = item_set_tags[0]
-        if len(item_set_tags) > 1:
-            logger.warning(
-                f"Found more than one ItemSet. Using set with id {item_set_tag.attrib["id"]}"
-            )
+        item_set_tag = xml_obj.find(f'Items/ItemSet[@id="{build_set_id}"]')
+
         for slot in item_set_tag.findall("Slot"):
             if (item_id := slot.attrib["itemId"]) != "0":
                 item_id_to_slot_name[item_id] = slot.attrib["name"]
@@ -83,6 +123,11 @@ class BuildService(BuildServicePort):
         equipment = Equipment()
         jewels = []
         for item_id, item_name in item_name_by_id.items():
+            if item_id not in item_id_to_slot_name:
+                logger.warning(
+                    f"Unable to find item {item_name} ({item_id}) relative slot. Skip."
+                )
+                continue
             slot_name = item_id_to_slot_name[item_id]
 
             if slot_name not in ITEM_SLOT_TO_EQUIPMENT_ATTR:
@@ -103,10 +148,15 @@ class BuildService(BuildServicePort):
                 equipment.__setattr__(attr_name, item_name)
 
         return Build(
-            character_class="",
-            character_ascendancy="",
+            id=uuid.uuid4(),
+            character_class=character_class,
+            character_ascendancy=character_ascendancy,
             character_attributes=attributes,
             equipment=equipment,
             gems=[],
             jewels=jewels,
         )
+
+
+def make_build_service() -> BuildServicePort:
+    return BuildService()

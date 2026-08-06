@@ -1,5 +1,6 @@
 from typing import Any, cast
 
+from domain.build.application_service.build_service import make_build_service
 from domain.items.application_service.service import ItemService, make_item_service
 from domain.items.ports.service import ItemFilters
 from flask import Flask, request
@@ -36,3 +37,47 @@ def get_all_item_class() -> list[dict[str, Any]]:
     item_classes = item_service._repository.distinct("item_class")
 
     return {"item_classes": item_classes}, 200
+
+
+@app.route("/builds", methods=["GET"])
+def get_builds() -> list[dict[str, Any]]:
+    build_service = make_build_service()
+    builds = build_service.get_builds()
+
+    return {
+        "builds": [build.model_dump() for build in builds],
+    }, 200
+
+
+@app.route("/builds/<build_id>", methods=["GET"])
+def get_build(build_id: str) -> list[dict[str, Any]]:
+    build_service = make_build_service()
+    builds = build_service.get_builds(build_id=build_id)
+    assert len(builds) == 1
+
+    return {
+        "build": builds[0].model_dump(),
+    }, 200
+
+
+@app.route("/pob/parse_build_sets", methods=["POST"])
+def parse_build_sets() -> list[dict[str, Any]]:
+    pob_code = request.json.get("pob_code")
+    build_service = make_build_service()
+    build_set_mapping = build_service.get_build_sets_from_pob_code(pob_code=pob_code)
+
+    return {"build_sets": build_set_mapping}, 200
+
+
+@app.route("/pob/create_build", methods=["POST"])
+def post_build() -> list[dict[str, Any]]:
+    pob_code = request.json.get("pob_code")
+    build_set_id = request.json.get("build_set_id")
+    build_service = make_build_service()
+    build = build_service.parse_pob_code(pob_code=pob_code, build_set_id=build_set_id)
+    build_service.save_build(build=build)
+
+    return {
+        "status": "ok",
+        "build_id": str(build.id),
+    }, 200

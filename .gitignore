@@ -2,5 +2,7 @@ __pycache__
 .python-version
 .env
 
+# Tests file for development purpose - dont't juge me
 output.xml
+output_jugg.xml
 input.txt

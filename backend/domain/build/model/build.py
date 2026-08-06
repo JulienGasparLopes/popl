@@ -1,8 +1,9 @@
-from dataclasses import dataclass
+import uuid
+
+from pydantic import BaseModel
 
 
-@dataclass
-class CharacterAttributes:
+class CharacterAttributes(BaseModel):
     life: int
     mana: int
 
@@ -19,8 +20,7 @@ class CharacterAttributes:
     frenzy_charges: int = 3
 
 
-@dataclass
-class Equipment:
+class Equipment(BaseModel):
     helmet: str | None = None
     body: str | None = None
     left_hand: str | None = None
@@ -33,8 +33,9 @@ class Equipment:
     boots: str | None = None
 
 
-@dataclass
-class Build:
+class Build(BaseModel):
+    id: uuid.UUID
+
     character_class: str
     character_ascendancy: str
     character_attributes: CharacterAttributes
