@@ -14,12 +14,14 @@ export default async function Home() {
       Coucou
       {Object.entries(itemsByClass).map(([key, values]) => {
         return (
-          <div>
+          <div key={key}>
             <h1>{key}</h1>
             <select>
               <option value="None">None</option>
               {values.map((value) => (
-                <option value={value.name}>{value.name}</option>
+                <option key={value.name} value={value.name}>
+                  {value.name}
+                </option>
               ))}
             </select>
           </div>

@@ -3,6 +3,9 @@
 import { formEventToData } from "@/helpers";
 import { redirect } from "next/navigation";
 import { SubmitEvent, useState } from "react";
+import { Button } from "../_components/inputs";
+import { Section } from "../_components/section";
+import { SubTitle } from "../_components/titles";
 import { createBuild } from "./create_build";
 import { getBuildSets } from "./get_build_sets";
 
@@ -30,48 +33,57 @@ export default function BuildListContent({ builds }) {
   };
 
   return (
-    <>
-      <div>Build List</div>
-      {builds.map((build, index) => {
-        return (
-          <div key={index}>
-            <a href={`/builds/${build.id}`}>
-              {build.character_class} - {build.character_ascendancy}
-            </a>
-          </div>
-        );
-      })}
+    <div className="flex flex-col gap-8">
+      <Section name="Builds List">
+        {builds.map((build, index) => {
+          return (
+            <div key={index}>
+              <a href={`/builds/${build.id}`}>
+                {build.character_class} - {build.character_ascendancy}
+              </a>
+              <hr></hr>
+            </div>
+          );
+        })}
+      </Section>
 
-      <div>Import Build</div>
-
-      <form onSubmit={onSubmitPoBCode}>
-        <div>PoB Code:</div>
-        <input
-          type="text"
-          name="pob_code"
-          onChange={(event) => {
-            setPobCode(event.target.value);
-          }}
-        />
-        <button type="submit">Load PoB Code</button>
-      </form>
-
-      {Object.entries(buildSetIdToName).length > 0 && (
-        <div>
-          <div>Select Build Set to use</div>
-          <form onSubmit={onSubmitCreateBuild}>
-            <select name="build_set_id">
-              {Object.entries(buildSetIdToName).map(([buildSetId, buildSetName]) => (
-                <option value={buildSetId} key={buildSetId}>
-                  [{buildSetId}] {buildSetName}
-                </option>
-              ))}
-            </select>
-            <input type="text" name="pob_code" hidden={true} value={pobCode} readOnly></input>
-            <button type="submit">Create Build</button>
+      <Section name="Import New Build">
+        <div className="mb-4">
+          <form onSubmit={onSubmitPoBCode}>
+            <SubTitle subtitle="PoB Code" />
+            <div className="outline-1 -outline-offset-1 outline-gray-600 border rounded-sm w-fit">
+              <input
+                type="text"
+                name="pob_code"
+                onChange={(event) => {
+                  setPobCode(event.target.value);
+                }}
+                className="outline-gray-500 focus:outline-blue-500"
+              />
+            </div>
+            <Button title="Load PoB Code" />
           </form>
         </div>
-      )}
-    </>
+
+        {Object.entries(buildSetIdToName).length > 0 && (
+          <div>
+            <SubTitle subtitle="Select Build Set to use" />
+            <form onSubmit={onSubmitCreateBuild}>
+              <div className="outline-1 -outline-offset-1 outline-gray-600 border rounded-sm w-fit">
+                <select name="build_set_id">
+                  {Object.entries(buildSetIdToName).map(([buildSetId, buildSetName]) => (
+                    <option value={buildSetId} key={buildSetId}>
+                      [{buildSetId}] {buildSetName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <input type="text" name="pob_code" hidden={true} value={pobCode} readOnly />
+              <Button title="Create Build" />
+            </form>
+          </div>
+        )}
+      </Section>
+    </div>
   );
 }
