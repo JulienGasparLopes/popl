@@ -8,6 +8,8 @@ logger = get_logger(__name__)
 
 
 def main() -> None:
+    """Synchronize all uniques items from PoB Wiki"""
+
     mongo_conn = MongoConnector()
     item_service = ItemService(mongo_connector=mongo_conn)
 

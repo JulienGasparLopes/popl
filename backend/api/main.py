@@ -1,6 +1,8 @@
+import uuid
 from typing import Any, cast
 
 from domain.build.application_service.build_service import make_build_service
+from domain.build.ports.build_service import ItemsObtained
 from domain.items.application_service.service import ItemService, make_item_service
 from domain.items.ports.service import ItemFilters
 from flask import Flask, request
@@ -52,7 +54,7 @@ def get_builds() -> list[dict[str, Any]]:
 @app.route("/builds/<build_id>", methods=["GET"])
 def get_build(build_id: str) -> list[dict[str, Any]]:
     build_service = make_build_service()
-    builds = build_service.get_builds(build_id=build_id)
+    builds = build_service.get_builds(build_id=uuid.UUID(build_id))
     assert len(builds) == 1
 
     return {
@@ -80,4 +82,15 @@ def post_build() -> list[dict[str, Any]]:
     return {
         "status": "ok",
         "build_id": str(build.id),
+    }, 200
+
+
+@app.route("/builds/<build_id>/set_items_obtained", methods=["POST"])
+def set_items_obtained(build_id: str) -> list[dict[str, Any]]:
+    items_obtained = ItemsObtained.model_validate(request.json)
+    build_service = make_build_service()
+    build_service.set_item_obtained(build_id=build_id, items_obtained=items_obtained)
+
+    return {
+        "status": "ok",
     }, 200
