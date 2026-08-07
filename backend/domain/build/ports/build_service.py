@@ -17,6 +17,8 @@ class ItemsObtained(BaseModel):
     gloves: bool | None = None
     boots: bool | None = None
 
+    jewels: dict[int, bool] | None = None
+
 
 class BuildServicePort(Protocol):
 

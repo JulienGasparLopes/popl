@@ -79,6 +79,10 @@ class BuildService(BuildServicePort):
         if items_obtained.belt is not None:
             build.equipment.belt.obtained = items_obtained.belt
 
+        if items_obtained.jewels is not None:
+            for index, obtained in items_obtained.jewels.items():
+                build.jewels[index].obtained = obtained
+
         self.save_build(build=build)
 
     def get_build_sets_from_pob_code(self, *, pob_code: str) -> dict[str, str]:

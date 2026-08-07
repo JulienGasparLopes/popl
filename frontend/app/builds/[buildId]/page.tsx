@@ -56,7 +56,7 @@ export default async function BuildPage({ params }: { params: Promise<{ buildId:
         <div className="flex flex-col gap-4 grow">
           <Card title="Jewels">
             {build.jewels.map((jewelInfo: { name: string; obtained: boolean }, index: number) => {
-              return <RequiredItem buildId={buildId} key={index} itemKey="jewel" itemInfo={jewelInfo} />;
+              return <RequiredItem buildId={buildId} key={index} itemKey={`jewels${index}`} itemInfo={jewelInfo} />;
             })}
           </Card>
           {/* <Card title="Flasks">
