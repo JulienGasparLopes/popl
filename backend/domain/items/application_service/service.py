@@ -4,8 +4,8 @@ from domain.items.ports.service import ItemFilters, ItemServicePort
 
 
 class ItemService(ItemServicePort):
-    def __init__(self, *, mongo_connector: MongoConnector):
-        self._mongo_conn = mongo_connector
+    def __init__(self):
+        self._mongo_conn = MongoConnector()
         self._repository = self._mongo_conn.get_collection("items")
 
     def get_items(self, *, filters: ItemFilters) -> list[Item]:
@@ -29,4 +29,4 @@ class ItemService(ItemServicePort):
 
 
 def make_item_service() -> ItemServicePort:
-    return ItemService(mongo_connector=MongoConnector())
+    return ItemService()

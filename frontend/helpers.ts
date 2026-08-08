@@ -1,7 +1,11 @@
 import { SubmitEvent } from "react";
 
 
-export const formEventToData = (event: SubmitEvent<HTMLFormElement>) => {
+type BuildSetInfo = { pob_code: string, build_set_id: string }
+
+type formEventToDataType = (event: SubmitEvent<HTMLFormElement>) => BuildSetInfo
+
+export const formEventToData: formEventToDataType = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)

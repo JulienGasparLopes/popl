@@ -36,7 +36,7 @@ export default function RootLayout({
           <hr className="mb-16"></hr>
 
           <div className="flex flex-col gap-4">
-            <a href="/">
+            <a href="/mechanics">
               <h2>League Mechanics</h2>
             </a>
 

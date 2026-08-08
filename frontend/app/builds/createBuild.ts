@@ -14,8 +14,6 @@ export const createBuild = async (pobCode: string, buildSetId: string) => {
 
   })
 
-  alert("OK")
-
-  // Handle response if necessary
   const data = await response.json()
+  return data.build_id
 }

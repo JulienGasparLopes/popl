@@ -5,6 +5,9 @@ from domain.build.application_service.build_service import make_build_service
 from domain.build.ports.build_service import ItemsObtained
 from domain.items.application_service.service import ItemService, make_item_service
 from domain.items.ports.service import ItemFilters
+from domain.mechanics.application_service.mechanics_service import (
+    make_mechanics_service,
+)
 from flask import Flask, request
 from flask_cors import CORS
 
@@ -90,6 +93,36 @@ def set_items_obtained(build_id: str) -> list[dict[str, Any]]:
     items_obtained = ItemsObtained.model_validate(request.json)
     build_service = make_build_service()
     build_service.set_item_obtained(build_id=build_id, items_obtained=items_obtained)
+
+    return {
+        "status": "ok",
+    }, 200
+
+
+@app.route("/mechanics", methods=["GET"])
+def get_mechanics_mapping() -> list[dict[str, Any]]:
+    mechanics_service = make_mechanics_service()
+    mechanics_mapping = mechanics_service.get_league_mechanics_mappings()
+    league_mechanics_names = mechanics_service.get_league_mechanics_names()
+
+    return {
+        "mechanics_mappings": [m.model_dump() for m in mechanics_mapping],
+        "league_mechanics": league_mechanics_names,
+        "users_names": [m.user_id for m in mechanics_mapping],
+    }
+
+
+@app.route("/mechanics/<user_id>", methods=["POST"])
+def set_user_mechanics_mapping(user_id: str) -> list[dict[str, Any]]:
+    mechanics_service = make_mechanics_service()
+    loot_mechanics = mechanics_service.get_league_mechanics_mappings(
+        user_ids=[user_id]
+    )[0].loot_mechanics
+
+    for key, value in request.json.items():
+        loot_mechanics.__setattr__(key, value)
+
+    mechanics_service.set_league_mechanics(user_id=user_id, mechanics=loot_mechanics)
 
     return {
         "status": "ok",

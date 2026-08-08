@@ -6,11 +6,11 @@ import { SubmitEvent, useState } from "react";
 import { Button } from "../_components/inputs";
 import { Section } from "../_components/section";
 import { SubTitle } from "../_components/titles";
-import { createBuild } from "./create_build";
-import { getBuildSets } from "./get_build_sets";
+import { createBuild } from "./createBuild";
+import { getBuildSets } from "./getBuildSets";
 
-export default function BuildListContent({ builds }) {
-  const [buildSetIdToName, setBuildSetIdToName] = useState({});
+export default function BuildListContent({ builds }: { builds: Build[] }) {
+  const [buildSetIdToName, setBuildSetIdToName] = useState<Record<string, string>>({});
   const [pobCode, setPobCode] = useState<string>("");
 
   const onSubmitPoBCode = async (event: SubmitEvent<HTMLFormElement>) => {

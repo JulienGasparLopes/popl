@@ -5,7 +5,7 @@ export const createBuild = async (pobCode: string, buildSetId: string) => {
     "build_set_id": buildSetId,
   }
 
-  const response = await fetch('http://127.0.0.1:5000/pob/create_build', {
+  await fetch('http://127.0.0.1:5000/pob/create_build', {
     method: 'POST',
     body: JSON.stringify(body),
     headers: {
@@ -13,8 +13,4 @@ export const createBuild = async (pobCode: string, buildSetId: string) => {
     }
 
   })
-
-  // Handle response if necessary
-  const data = await response.json()
-  return data.build_id
 }
