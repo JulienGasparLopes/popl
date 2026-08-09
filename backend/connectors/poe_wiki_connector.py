@@ -1,5 +1,3 @@
-import html
-import json
 from dataclasses import dataclass
 from typing import Any
 
@@ -53,14 +51,11 @@ class PoeWikiConnetor:
 
         response = requests.get(_BASE_URL, params=params)
         if not response.ok:
-            raise RuntimeError(
-                f"Unable to retrieve data on PoE Wiki: {response.status_code} - {response.reason}"
-            )
+            msg = f"Unable to retrieve data on PoE Wiki: {response.status_code} - {response.reason}"
+            logger.warning(msg)
+            raise RuntimeError(msg)
 
-        return [
-            res.get("title")
-            for res in json.loads(html.unescape(response.text)).get("cargoquery", [])
-        ]
+        return [res.get("title") for res in response.json().get("cargoquery", [])]
 
     def query_resource(self, *, query: ResourceQuery) -> list[JsonObj]:
         results = []

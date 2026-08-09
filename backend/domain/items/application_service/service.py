@@ -27,6 +27,11 @@ class ItemService(ItemServicePort):
         )
         # return _result.upserted_id
 
+    def add_items(self, *, items: list[Item]) -> None:
+        self._repository.insert_many(
+            [item.model_dump(exclude={"id"}) for item in items]
+        )
+
 
 def make_item_service() -> ItemServicePort:
     return ItemService()
