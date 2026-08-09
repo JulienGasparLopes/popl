@@ -48,3 +48,5 @@ class Build(BaseModel):
     equipment: Equipment
     gems: list[RequiredItem]
     jewels: list[RequiredItem]
+
+    notes: str

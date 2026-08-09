@@ -8,7 +8,7 @@
             "name": "Debug backend module",
             "type": "debugpy",
             "request": "launch",
-            "module": "scripts.decode_pob",
+            "module": "scripts.populate_builds",
             "cwd": "${workspaceFolder}/backend",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/backend"

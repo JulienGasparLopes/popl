@@ -4,6 +4,10 @@ from domain.build.application_service.build_service import (
     BuildService,
     make_build_service,
 )
+from domain.build.application_service.pob_build_service import (
+    PoBBuildService,
+    make_pob_build_service,
+)
 from log import get_logger
 
 logger = get_logger(__name__)
@@ -25,12 +29,15 @@ def main() -> None:
         ),
     ]
 
+    pob_build_service = make_pob_build_service()
+    pob_build_service = cast(PoBBuildService, pob_build_service)
+
     build_service = make_build_service()
     build_service = cast(BuildService, build_service)
     build_service._repository.delete_many({})
 
     for build_set_id, pob_code in pob_builds:
-        build = build_service.parse_pob_code(
+        build = pob_build_service.parse_pob_code(
             pob_code=pob_code, build_set_id=build_set_id
         )
         build_service.save_build(build=build)

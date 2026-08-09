@@ -8,6 +8,7 @@ from domain.items.model.item import Item, Rarity
 class ItemFilters:
     rarity: set[Rarity] | None = None
     item_class: set[str] | None = None
+    name: set[str] | None = None
 
 
 class ItemServicePort(Protocol):

@@ -14,6 +14,8 @@ class ItemService(ItemServicePort):
             query_filters["rarity"] = {"$in": list(filters.rarity)}
         if filters.item_class is not None:
             query_filters["item_class"] = {"$in": list(filters.item_class)}
+        if filters.name is not None:
+            query_filters["name"] = {"$in": list(filters.name)}
 
         raw_items = self._repository.find(query_filters)
 
