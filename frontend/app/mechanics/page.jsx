@@ -13,7 +13,7 @@ const MechanicsPage = async () => {
     return <Section name="League Mechanics">
         <div className="flex">
             <div className="flex flex-col">
-                <div>Mechanics</div>
+                <div className="border-b">Mechanics</div>
                 {
                     mechanics_names.map(name => <div key={name}>{name}</div>)
                 }

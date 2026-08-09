@@ -12,7 +12,7 @@ export const DefaultMechanicsColumn = ({ userId, mechanicsNames }: { userId: str
 
   return (
     <div className="flex flex-col border-l">
-      <div className="px-2">{userId}</div>
+      <div className="px-2 border-b">{userId}</div>
       {mechanicsNames.map((name) => (
         <div key={name} onClick={() => onUpdateMechanic(name)} className="p-2">
           none
@@ -29,7 +29,7 @@ export const UserMechanicsColumn = ({ userId, mechanicsMapping }: { userId: stri
 
   return (
     <div className="flex flex-col border-l">
-      <div className="px-2">{userId}</div>
+      <div className="px-2 border-b">{userId}</div>
       {Object.entries(mechanicsMapping).map(([name, value]) => {
         return <MechanicCell key={name} name={name} value={value} onUpdateMechanic={onUpdateMechanic} />;
       })}
