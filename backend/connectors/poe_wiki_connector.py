@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass
 from typing import Any
 
@@ -16,7 +17,7 @@ class ResourceQuery:
     table_name: str
     fields: list[str]
     filters: dict[str, str] | None = None
-    limit: int = 50
+    limit: int = 500
     offset: int = 0
 
     def next_page(self) -> "ResourceQuery":
@@ -51,6 +52,10 @@ class PoeWikiConnetor:
 
         response = requests.get(_BASE_URL, params=params)
         if not response.ok:
+            if response.status_code == 429:
+                time.sleep(1)
+                return self._single_query_resource(query)
+
             msg = f"Unable to retrieve data on PoE Wiki: {response.status_code} - {response.reason}"
             logger.warning(msg)
             raise RuntimeError(msg)
@@ -64,6 +69,7 @@ class PoeWikiConnetor:
         last_page_len = page_size
 
         while last_page_len >= page_size:
+            logger.info(f"Current Offset: {current_querry.offset}")
             try:
                 current_results = self._single_query_resource(query=current_querry)
             except Exception as exc:  # noqa: BLE001
