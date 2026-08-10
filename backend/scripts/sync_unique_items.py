@@ -38,8 +38,15 @@ def main() -> None:
 
     items = []
     for raw_item in raw_items:
+        drop_text = raw_item.get("drop text")
         item = Item.model_validate(
-            {**raw_item, "name": html.unescape(raw_item.get("name"))}
+            {
+                **raw_item,
+                "name": html.unescape(raw_item.get("name")),
+                "drop text": (
+                    html.unescape(drop_text) if drop_text is not None else None
+                ),
+            }
         )
         if RUN_AS_TEST:
             logger.info(item)
@@ -48,7 +55,8 @@ def main() -> None:
             logger.info(f"Adding Item {item.name}")
             items.append(item)
 
-    item_service.add_items(items=items)
+    if items:
+        item_service.add_items(items=items)
 
 
 if __name__ == "__main__":

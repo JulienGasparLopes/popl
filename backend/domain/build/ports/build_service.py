@@ -20,6 +20,11 @@ class ItemsObtained(BaseModel):
     jewels: dict[int, bool] | None = None
 
 
+class WantedItem(BaseModel):
+    user_id: str
+    item_name: str
+
+
 class BuildServicePort(Protocol):
 
     def get_builds(self, *, build_id: uuid.UUID | None = None) -> list[Build]: ...
@@ -31,3 +36,5 @@ class BuildServicePort(Protocol):
     def set_item_obtained(
         self, *, build_id: uuid.UUID, items_obtained: ItemsObtained
     ) -> None: ...
+
+    def get_wanted_items(self) -> list[WantedItem]: ...

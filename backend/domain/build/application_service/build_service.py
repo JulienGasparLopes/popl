@@ -2,7 +2,7 @@ import uuid
 
 from connectors.mongo_connector import MongoConnector
 from domain.build.model.build import Build
-from domain.build.ports.build_service import BuildServicePort, ItemsObtained
+from domain.build.ports.build_service import BuildServicePort, ItemsObtained, WantedItem
 from log import get_logger
 
 logger = get_logger(__name__)
@@ -59,6 +59,22 @@ class BuildService(BuildServicePort):
                 build.jewels[index].obtained = obtained
 
         self.save_build(build=build)
+
+    def get_wanted_items(self) -> list[WantedItem]:
+        wanted_items: list[WantedItem] = []
+        builds = self.get_builds()
+
+        for build in builds:
+            for required_item in build.required_items:
+                if not required_item.obtained:
+                    wanted_items.append(
+                        WantedItem(
+                            user_id="Pinzen",
+                            item_name=required_item.name,
+                        )
+                    )
+
+        return wanted_items
 
 
 def make_build_service() -> BuildServicePort:

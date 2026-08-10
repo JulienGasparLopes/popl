@@ -127,3 +127,35 @@ def set_user_mechanics_mapping(user_id: str) -> list[dict[str, Any]]:
     return {
         "status": "ok",
     }, 200
+
+
+@app.route("/wanted_items", methods=["GET"])
+def get_wanted_items() -> list[dict[str, Any]]:
+    build_service = make_build_service()
+    item_service = make_item_service()
+
+    wanted_items = build_service.get_wanted_items()
+
+    wanted_items_mapping: dict[str, dict[str, dict[str, int]]] = {}
+    for wanted_item in wanted_items:
+        if not wanted_item.item_name in wanted_items_mapping:
+            wanted_items_mapping[wanted_item.item_name] = {"users": {}, "total": 0}
+
+        if (
+            not wanted_item.user_id
+            in wanted_items_mapping[wanted_item.item_name]["users"]
+        ):
+            wanted_items_mapping[wanted_item.item_name]["users"][
+                wanted_item.user_id
+            ] = 0
+
+        wanted_items_mapping[wanted_item.item_name]["users"][wanted_item.user_id] += 1
+        wanted_items_mapping[wanted_item.item_name]["total"] += 1
+
+    items_info = item_service.get_items(
+        filters=ItemFilters(name={k for k in wanted_items_mapping})
+    )
+    for item_info in items_info:
+        wanted_items_mapping[item_info.name]["info"] = item_info.model_dump()
+
+    return wanted_items_mapping, 200

@@ -44,7 +44,7 @@ export default function RootLayout({
               <h2>Builds</h2>
             </a>
 
-            <a href="/">
+            <a href="/wantedItems">
               <h2>Wish List</h2>
             </a>
           </div>

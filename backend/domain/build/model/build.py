@@ -50,3 +50,13 @@ class Build(BaseModel):
     jewels: list[RequiredItem]
 
     notes: str
+
+    @property
+    def required_items(self) -> list[RequiredItem]:
+        required_items = self.gems + self.jewels
+
+        for attr_name in Equipment.model_fields:
+            if (item := self.equipment.__getattribute__(attr_name)) is not None:
+                required_items.append(item)
+
+        return required_items

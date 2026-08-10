@@ -1,3 +1,5 @@
+//TODO delete
+
 export default async function Home() {
   const itemsResponse = await fetch("http://127.0.0.1:5000/items");
   const items: object[] = (await itemsResponse.json()).items;
