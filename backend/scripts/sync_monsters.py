@@ -15,7 +15,7 @@ RUN_AS_TEST = False
 
 
 def main() -> None:
-    """Synchronize all monsters from PoB Wiki"""
+    """Synchronize all monsters from PoE Wiki"""
 
     monster_service = make_monster_service()
     monster_service = cast(MonsterService, monster_service)

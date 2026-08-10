@@ -1,22 +1,21 @@
 import html
 from typing import cast
 
+from connectors.mongo_connector import MongoConnector
 from connectors.poe_wiki_connector import PoeWikiConnetor, ResourceQuery
 from domain.items.application_service.service import ItemService, make_item_service
 from domain.items.model.item import Item
 from log import get_logger
+from pymongo.collection import Collection
 
 logger = get_logger(__name__)
 
 RUN_AS_TEST = False
 
+IMPORT_POE_WIKI_DATA = False
 
-def main() -> None:
-    """Synchronize all uniques items from PoB Wiki"""
 
-    item_service = make_item_service()
-    item_service = cast(ItemService, item_service)
-
+def copy_poe_wiki_data(poe_wiki_repo: Collection) -> None:
     poe_wiki_conn = PoeWikiConnetor()
 
     query_func = (
@@ -33,11 +32,22 @@ def main() -> None:
         )
     )
 
+    poe_wiki_repo.delete_many({})
+    poe_wiki_repo.insert_many(raw_items)
+    logger.info(f"Inserted {len(raw_items)} items")
+
+
+def transform_load_items(poe_wiki_repo: Collection) -> None:
+    """Synchronize all uniques items from PoE Wiki"""
+
+    item_service = make_item_service()
+    item_service = cast(ItemService, item_service)
+
     if not RUN_AS_TEST:
         item_service._repository.delete_many({})
 
     items = []
-    for raw_item in raw_items:
+    for raw_item in poe_wiki_repo.find({}):
         drop_text = raw_item.get("drop text")
         item = Item.model_validate(
             {
@@ -60,4 +70,10 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    mongo_conn = MongoConnector()
+    item_repo = mongo_conn.get_collection("poe_wiki_items")
+
+    if IMPORT_POE_WIKI_DATA:
+        copy_poe_wiki_data(item_repo)
+
+    transform_load_items(item_repo)

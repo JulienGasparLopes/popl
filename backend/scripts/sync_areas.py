@@ -12,7 +12,7 @@ RUN_AS_TEST = False
 
 
 def main() -> None:
-    """Synchronize all areas from PoB Wiki"""
+    """Synchronize all areas from PoE Wiki"""
 
     area_service = make_area_service()
     area_service = cast(AreaService, area_service)
