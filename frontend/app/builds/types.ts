@@ -27,4 +27,5 @@ type Build = {
         id: string;
         pseudo: string;
     }
+    item_name_to_inventory_icon: { [id: string]: string }
 };

@@ -10,7 +10,7 @@ export default function BuildsTable({ builds }: { builds: Build[] }) {
           <div key={index}>
             <a className="flex gap-8" href={`/builds/${build.id}`}>
               {build.character_class} - {build.character_ascendancy}
-              <div>{build.pseudo}</div>
+              <div>{build.owner.pseudo}</div>
             </a>
             <hr></hr>
           </div>

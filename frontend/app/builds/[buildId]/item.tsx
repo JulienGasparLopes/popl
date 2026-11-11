@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { setItemsObtained } from "./setItemsObtained";
 
@@ -8,12 +9,14 @@ export const RequiredItem = ({
   name,
   itemKey,
   itemInfo,
+  itemNameToInventoryIcon,
   updatable = false,
 }: {
   buildId: string;
   name?: string;
   itemKey: string;
   itemInfo: ItemInfo | null;
+  itemNameToInventoryIcon: { [id: string]: string };
   updatable?: boolean;
 }) => {
   const [obtained, setObtained] = useState(itemInfo?.obtained);
@@ -21,11 +24,11 @@ export const RequiredItem = ({
   const pointer = updatable ? "cursor-pointer" : "";
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 items-center">
       {name && <h3>{name}: </h3>}
       {itemInfo ? (
-        <h3
-          className={`${color} ${pointer}`}
+        <div
+          className={`flex items-center gap-2 ${pointer}`}
           onClick={(event) => {
             if (!updatable) return;
 
@@ -35,8 +38,14 @@ export const RequiredItem = ({
             setObtained(!obtained);
           }}
         >
-          {itemInfo.name}
-        </h3>
+          <Image
+            alt={itemInfo.name}
+            src={`https://www.poewiki.net/wiki/Special:${itemNameToInventoryIcon[itemInfo.name]}`}
+            width={50}
+            height={50}
+          />
+          <h3 className={`${color}`}>{itemInfo.name}</h3>
+        </div>
       ) : (
         <h3>-</h3>
       )}

@@ -24,7 +24,7 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
       <div className="flex gap-4">
         <div className="flex flex-col gap-4 grow">
           <Card title="Informations">
-            <h3>Id: {build.id}</h3>
+            <h3>Owner: {build.owner.pseudo}</h3>
             <h3>Life: {build.character_attributes.life}</h3>
             <h3>Mana: {build.character_attributes.mana}</h3>
             <h3>Strength: {build.character_attributes.strength}</h3>
@@ -32,6 +32,7 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
             <h3>Intelligence: {build.character_attributes.intelligence}</h3>
           </Card>
           <Card title="Gems">
+            WIP
             {build.gems.map((gem_name: string) => {
               return <h3>{gem_name}</h3>;
             })}
@@ -45,6 +46,7 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
               name="Helmet"
               itemKey="helmet"
               itemInfo={build.equipment.helmet}
+              itemNameToInventoryIcon={build.item_name_to_inventory_icon}
             />
             <RequiredItem
               updatable={updatable}
@@ -52,6 +54,7 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
               name="Body"
               itemKey="body"
               itemInfo={build.equipment.body}
+              itemNameToInventoryIcon={build.item_name_to_inventory_icon}
             />
             <RequiredItem
               updatable={updatable}
@@ -59,6 +62,7 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
               name="Gloves"
               itemKey="gloves"
               itemInfo={build.equipment.gloves}
+              itemNameToInventoryIcon={build.item_name_to_inventory_icon}
             />
             <RequiredItem
               updatable={updatable}
@@ -66,6 +70,7 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
               name="Boots"
               itemKey="boots"
               itemInfo={build.equipment.boots}
+              itemNameToInventoryIcon={build.item_name_to_inventory_icon}
             />
           </Card>
           <Card title="Jewellery">
@@ -75,6 +80,7 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
               name="Left Ring"
               itemKey="left_ring"
               itemInfo={build.equipment.left_ring}
+              itemNameToInventoryIcon={build.item_name_to_inventory_icon}
             />
             <RequiredItem
               updatable={updatable}
@@ -82,6 +88,7 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
               name="Right Ring"
               itemKey="right_ring"
               itemInfo={build.equipment.right_ring}
+              itemNameToInventoryIcon={build.item_name_to_inventory_icon}
             />
             <RequiredItem
               updatable={updatable}
@@ -89,6 +96,7 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
               name="Amulet"
               itemKey="amulet"
               itemInfo={build.equipment.amulet}
+              itemNameToInventoryIcon={build.item_name_to_inventory_icon}
             />
             <RequiredItem
               updatable={updatable}
@@ -96,6 +104,7 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
               name="Belt"
               itemKey="belt"
               itemInfo={build.equipment.belt}
+              itemNameToInventoryIcon={build.item_name_to_inventory_icon}
             />
           </Card>
           <Card title="Weapons">
@@ -105,6 +114,7 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
               name="Left Hand"
               itemKey="left_hand"
               itemInfo={build.equipment.left_hand}
+              itemNameToInventoryIcon={build.item_name_to_inventory_icon}
             />
             <RequiredItem
               updatable={updatable}
@@ -112,6 +122,7 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
               name="Right Hand"
               itemKey="right_hand"
               itemInfo={build.equipment.right_hand}
+              itemNameToInventoryIcon={build.item_name_to_inventory_icon}
             />
           </Card>
         </div>
@@ -125,15 +136,17 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
                   key={index}
                   itemKey={`jewels${index}`}
                   itemInfo={jewelInfo}
+                  itemNameToInventoryIcon={build.item_name_to_inventory_icon}
                 />
               );
             })}
           </Card>
-          {/* <Card title="Flasks">
-            {build.flasks.map((flask_name: string) => {
+          <Card title="Flasks">
+            WIP
+            {/* {build.flasks.map((flask_name: string) => {
               return <h3>{flask_name}</h3>;
-            })}
-          </Card> */}
+            })} */}
+          </Card>
         </div>
       </div>
     </Section>

@@ -189,6 +189,8 @@ def get_builds() -> list[dict[str, Any]]:
 @app.route("/builds/<build_id>", methods=["GET"])
 def get_build(build_id: str) -> list[dict[str, Any]]:
     build_service = make_build_service()
+    item_service = make_item_service()
+
     builds = build_service.get_builds(build_id=uuid.UUID(build_id))
     build = builds[0]
 
@@ -200,6 +202,9 @@ def get_build(build_id: str) -> list[dict[str, Any]]:
         for user in user_service.get_users(filters=UserFilters(id=user_ids))
     }
 
+    item_names = {item.name for item in build.required_items}
+    items = item_service.get_items(filters=ItemFilters(name=item_names))
+
     return {
         "build": {
             **build.model_dump(),
@@ -207,6 +212,7 @@ def get_build(build_id: str) -> list[dict[str, Any]]:
                 "id": build.owner_id,
                 "pseudo": user_id_to_pseudo.get(build.owner_id),
             },
+            "item_name_to_inventory_icon": {i.name: i.inventory_icon for i in items},
         },
     }, 200
 
