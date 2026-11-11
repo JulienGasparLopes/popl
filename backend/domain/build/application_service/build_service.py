@@ -22,7 +22,11 @@ class BuildService(BuildServicePort):
         return [Build.model_validate(raw_build) for raw_build in raw_builds]
 
     def save_build(self, *, build: Build) -> str:
-        data = {**build.model_dump(exclude=["id"]), "id": str(build.id)}
+        data = {
+            **build.model_dump(exclude=["id"]),
+            "id": str(build.id),
+            "owner_id": str(build.owner_id),
+        }
         self._repository.update_one({"id": str(build.id)}, {"$set": data}, upsert=True)
 
     def delete_builds(self, *, build_ids: list[uuid.UUID]) -> None:

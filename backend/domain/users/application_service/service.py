@@ -11,9 +11,11 @@ class UserService(UserServicePort):
     def get_users(self, *, filters: UserFilters) -> list[User]:
         query_filters = {}
         if filters.id is not None:
-            query_filters["id"] = {"$in": list(filters.id)}
+            query_filters["id"] = {"$in": [str(user_id) for user_id in filters.id]}
         if filters.google_id is not None:
             query_filters["google_id"] = {"$in": list(filters.google_id)}
+        if filters.pseudo is not None:
+            query_filters["pseudo"] = {"$in": list(filters.pseudo)}
 
         raw_users = self._repository.find(query_filters)
 

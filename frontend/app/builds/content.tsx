@@ -38,8 +38,9 @@ export default function BuildListContent({ builds }: { builds: Build[] }) {
         {builds.map((build, index) => {
           return (
             <div key={index}>
-              <a href={`/builds/${build.id}`}>
+              <a className="flex gap-8" href={`/builds/${build.id}`}>
                 {build.character_class} - {build.character_ascendancy}
+                <div>{build.pseudo}</div>
               </a>
               <hr></hr>
             </div>

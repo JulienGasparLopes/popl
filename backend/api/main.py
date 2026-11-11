@@ -5,6 +5,7 @@ from typing import Any, cast
 
 from authlib.integrations.flask_client import OAuth
 from domain.build.application_service.build_service import make_build_service
+from domain.build.application_service.pob_build_service import make_pob_build_service
 from domain.build.ports.build_service import ItemsObtained
 from domain.items.application_service.service import ItemService, make_item_service
 from domain.items.ports.service import ItemFilters
@@ -73,8 +74,11 @@ def google_callback():
         user = found_users[0]
 
     if not user:
+        pseudo = f"User {str(uuid.uuid4()).replace("-", "")[:8]}"
+        # TODO: manage colisions
         user = User(
             id=uuid.uuid4(),
+            pseudo=pseudo,
             email=email,
             google_id=google_id,
         )
@@ -123,18 +127,7 @@ def login_required(func):
 def get_current_user():
     user: User = g.current_user
 
-    return jsonify({"id": str(user.id), "email": user.email})
-
-
-@app.route("/")
-def hello_world():
-    return "<p>Welcome to the API !</p>"
-
-
-@app.route("/protected")
-@login_required
-def url_protected():
-    return "<p>C'est tout bon !</p>"
+    return jsonify({"id": str(user.id), "email": user.email, "pseudo": user.pseudo})
 
 
 @app.route("/items", methods=["GET"])
@@ -164,10 +157,24 @@ def get_all_item_class() -> list[dict[str, Any]]:
 @app.route("/builds", methods=["GET"])
 def get_builds() -> list[dict[str, Any]]:
     build_service = make_build_service()
+    user_service = make_user_service()
+
     builds = build_service.get_builds()
+    user_ids = {b.owner_id for b in builds}
+
+    user_id_to_pseudo = {
+        user.id: user.pseudo
+        for user in user_service.get_users(filters=UserFilters(id=user_ids))
+    }
 
     return {
-        "builds": [build.model_dump() for build in builds],
+        "builds": [
+            {
+                **build.model_dump(),
+                "pseudo": user_id_to_pseudo.get(build.owner_id),
+            }
+            for build in builds
+        ],
     }, 200
 
 
@@ -183,20 +190,28 @@ def get_build(build_id: str) -> list[dict[str, Any]]:
 
 
 @app.route("/pob/parse_build_sets", methods=["POST"])
+@login_required
 def parse_build_sets() -> list[dict[str, Any]]:
     pob_code = request.json.get("pob_code")
-    build_service = make_build_service()
+    build_service = make_pob_build_service()
     build_set_mapping = build_service.get_build_sets_from_pob_code(pob_code=pob_code)
 
     return {"build_sets": build_set_mapping}, 200
 
 
 @app.route("/pob/create_build", methods=["POST"])
+@login_required
 def post_build() -> list[dict[str, Any]]:
+    user: User = g.current_user
+
     pob_code = request.json.get("pob_code")
     build_set_id = request.json.get("build_set_id")
+    pob_build_service = make_pob_build_service()
     build_service = make_build_service()
-    build = build_service.parse_pob_code(pob_code=pob_code, build_set_id=build_set_id)
+
+    build = pob_build_service.parse_pob_code(
+        pob_code=pob_code, build_set_id=build_set_id, owner_id=user.id
+    )
     build_service.save_build(build=build)
 
     return {

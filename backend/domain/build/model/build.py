@@ -41,6 +41,8 @@ class Equipment(BaseModel):
 class Build(BaseModel):
     id: uuid.UUID
 
+    owner_id: uuid.UUID
+
     character_class: str
     character_ascendancy: str
     character_attributes: CharacterAttributes

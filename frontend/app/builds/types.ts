@@ -22,5 +22,6 @@ type Build = {
         left_ring: ItemInfo,
     }
     jewels: ItemInfo[],
-    gems: string[]
+    gems: string[],
+    pseudo: string
 };

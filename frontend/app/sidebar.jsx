@@ -33,7 +33,7 @@ export const Sidebar = ({ session }) => {
                     session ? (
                         <>
                             <div>Logged in as</div>
-                            <div>{session.email.split("@")[0]}</div>
+                            <div>{session.pseudo}</div>
                             <a href="http://127.0.0.1:5000/logout">
                                 Logout
                             </a>

@@ -52,7 +52,9 @@ class PoBBuildService(PoBBuildServicePort):
             for item_set_tag in item_set_tags
         }
 
-    def parse_pob_code(self, *, pob_code: str, build_set_id: str) -> Build:
+    def parse_pob_code(
+        self, *, pob_code: str, build_set_id: str, owner_id: uuid.UUID
+    ) -> Build:
         base64_decode = base64.urlsafe_b64decode(pob_code)
         decompressed_xml = zlib.decompress(base64_decode).decode("utf-8")
 
@@ -145,6 +147,7 @@ class PoBBuildService(PoBBuildServicePort):
 
         return Build(
             id=uuid.uuid4(),
+            owner_id=owner_id,
             character_class=character_class,
             character_ascendancy=character_ascendancy,
             character_attributes=attributes,

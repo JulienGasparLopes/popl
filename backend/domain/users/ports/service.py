@@ -9,6 +9,7 @@ from domain.users.model.user import User
 class UserFilters:
     id: set[uuid.UUID] | None = None
     google_id: set[str] | None = None
+    pseudo: set[str] | None = None
 
 
 class UserServicePort(Protocol):
