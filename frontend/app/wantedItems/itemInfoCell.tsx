@@ -3,7 +3,6 @@
 import { Tooltip } from "react-tooltip";
 
 export const ItemInfoCell = ({ itemName, wishes }: { itemName: string; wishes: object }) => {
-  console.log(JSON.stringify(wishes["info"]["drop_text"]).replaceAll('\\"', '"'));
   return (
     <div>
       <Tooltip id={`tooltip-${itemName}`}>

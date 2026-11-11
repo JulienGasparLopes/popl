@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Suspense } from "react";
+import { getSession } from "./getSession";
 import "./globals.css";
+import { Sidebar } from "./sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,39 +20,28 @@ export const metadata: Metadata = {
   description: "Path of Private League",
 };
 
-export default function RootLayout({
+const RootComponent = async ({ children }: { children: React.ReactNode }) => {
+  const session = await getSession();
+
+  return (
+    <>
+      <Sidebar session={session} />
+      <div className="p-16 w-full h-full overflow-scroll">{children}</div>
+    </>
+  );
+};
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex">
-        <nav className="p-8 shadow-xl/30 min-w-60">
-          <div className="flex content-center flex-col items-center mb-16 leading-none">
-            <h1>Path</h1>
-            <h1>of</h1>
-            <h1>Private</h1>
-            <h1>League</h1>
-          </div>
-
-          <hr className="mb-16"></hr>
-
-          <div className="flex flex-col gap-4">
-            <a href="/mechanics">
-              <h2>League Mechanics</h2>
-            </a>
-
-            <a href="/builds">
-              <h2>Builds</h2>
-            </a>
-
-            <a href="/wantedItems">
-              <h2>Wish List</h2>
-            </a>
-          </div>
-        </nav>
-        <div className="p-16 w-full">{children}</div>
+      <body className="min-h-full flex h-full overflow-hidden">
+        <Suspense fallback="Loading...">
+          <RootComponent children={children} />
+        </Suspense>
       </body>
     </html>
   );

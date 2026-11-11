@@ -1,6 +1,11 @@
+import os
 import uuid
+from functools import wraps
 from typing import Any, cast
 
+from authlib.integrations.flask_client import OAuth
+from bson import ObjectId
+from connectors.mongo_connector import MongoConnector
 from domain.build.application_service.build_service import make_build_service
 from domain.build.ports.build_service import ItemsObtained
 from domain.items.application_service.service import ItemService, make_item_service
@@ -8,16 +13,121 @@ from domain.items.ports.service import ItemFilters
 from domain.mechanics.application_service.mechanics_service import (
     make_mechanics_service,
 )
-from flask import Flask, request
+from dotenv import load_dotenv
+from flask import Flask, g, jsonify, redirect, request, session, url_for
 from flask_cors import CORS
 
+load_dotenv()
+
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["http://127.0.0.1:3000"], supports_credentials=True)
+
+app.config.update(
+    SESSION_COOKIE_NAME="session",
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=False,  # True in production with HTTPS
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_DOMAIN=None,
+)
+
+app.secret_key = os.getenv("FLASK_AUTH_SECRET_KEY")
+
+oauth = OAuth(app)
+
+oauth.register(
+    name="google",
+    client_id=os.getenv("GOOGLE_CLIENT_ID"),
+    client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
+    server_metadata_url=(
+        "https://accounts.google.com/.well-known/openid-configuration"
+    ),
+    client_kwargs={"scope": "openid email profile"},
+)
+
+
+# ----- LOGIN -----
+@app.route("/auth/google/login")
+def google_login():
+    redirect_uri = url_for("google_callback", _external=True)
+
+    return oauth.google.authorize_redirect(redirect_uri)
+
+
+@app.route("/auth/google/callback")
+def google_callback():
+    token = oauth.google.authorize_access_token()
+
+    google_user = token["userinfo"]
+
+    google_id = google_user["sub"]
+    email = google_user["email"]
+
+    # Find or create your internal user
+    mongo_conn = MongoConnector()
+    repository = mongo_conn.get_collection("users")
+    user = repository.find_one({"google_id": google_id})
+
+    if not user:
+        user = {"google_id": google_id, "email": email}
+        result = repository.insert_one(user)
+        user["id"] = str(result.inserted_id)
+    else:
+        user["id"] = str(user["_id"])
+        del user["_id"]
+
+    # Create your own authenticated session
+    session.clear()
+    session["user_id"] = user["id"]
+
+    return redirect("http://127.0.0.1:3000/mechanics")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("http://127.0.0.1:3000/mechanics")
+
+
+def login_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        user_id = session.get("user_id")
+
+        if not user_id:
+            return jsonify({"error": "Unauthorized"}), 401
+
+        mongo_conn = MongoConnector()
+        repository = mongo_conn.get_collection("users")
+        user = repository.find_one({"_id": ObjectId(user_id)})
+
+        if not user:
+            session.clear()
+            return jsonify({"error": "Unauthorized"}), 401
+
+        g.current_user = user
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+@app.route("/auth/me")
+@login_required
+def get_current_user():
+    user = g.current_user
+
+    return jsonify({"id": str(user["_id"]), "email": user["email"]})
 
 
 @app.route("/")
 def hello_world():
     return "<p>Welcome to the API !</p>"
+
+
+@app.route("/protected")
+@login_required
+def url_protected():
+    return "<p>C'est tout bon !</p>"
 
 
 @app.route("/items", methods=["GET"])
