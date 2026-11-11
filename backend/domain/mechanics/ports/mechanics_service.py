@@ -1,15 +1,22 @@
+import uuid
+from dataclasses import dataclass
 from typing import Protocol
 
 from domain.mechanics.model.mechanics import LootMechanics, MechanicsMapping
+
+
+@dataclass
+class LeagueMechanicsFilters:
+    owner_id: set[uuid.UUID] | None = None
 
 
 class LeagueMechanicsServicePort(Protocol):
     def get_league_mechanics_names(self) -> list[str]: ...
 
     def get_league_mechanics_mappings(
-        self, *, user_ids: list[str] | None = None
+        self, *, filters: LeagueMechanicsFilters
     ) -> list[MechanicsMapping]: ...
 
     def set_league_mechanics(
-        self, *, user_id: str, mechanics: LootMechanics
+        self, *, owner_id: uuid.UUID, mechanics: LootMechanics
     ) -> None: ...

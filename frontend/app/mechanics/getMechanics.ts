@@ -1,6 +1,6 @@
 import { cacheTag } from "next/cache";
 
-export const getMechanics = async (pobCode: string, buildSetId: string) => {
+export const getMechanics = async () => {
   "use cache";
   cacheTag("mechanics");
 

@@ -12,6 +12,8 @@ from domain.items.ports.service import ItemFilters
 from domain.mechanics.application_service.mechanics_service import (
     make_mechanics_service,
 )
+from domain.mechanics.model.mechanics import LootMechanics
+from domain.mechanics.ports.mechanics_service import LeagueMechanicsFilters
 from domain.users.application_service.service import make_user_service
 from domain.users.model.user import User
 from domain.users.ports.service import UserFilters
@@ -234,31 +236,55 @@ def set_items_obtained(build_id: str) -> list[dict[str, Any]]:
 @app.route("/mechanics", methods=["GET"])
 def get_mechanics_mapping() -> list[dict[str, Any]]:
     mechanics_service = make_mechanics_service()
-    mechanics_mapping = mechanics_service.get_league_mechanics_mappings()
+    user_service = make_user_service()
+
+    mechanics_mapping = mechanics_service.get_league_mechanics_mappings(
+        filters=LeagueMechanicsFilters()
+    )
     league_mechanics_names = mechanics_service.get_league_mechanics_names()
 
+    user_ids = {b.owner_id for b in mechanics_mapping}
+    user_id_to_pseudo = {
+        user.id: user.pseudo
+        for user in user_service.get_users(filters=UserFilters(id=user_ids))
+    }
+
     return {
-        "mechanics_mappings": [m.model_dump() for m in mechanics_mapping],
+        "mechanics_mappings": [
+            {**m.model_dump(), "pseudo": user_id_to_pseudo.get(m.owner_id)}
+            for m in mechanics_mapping
+        ],
         "league_mechanics": league_mechanics_names,
-        "users_names": [m.user_id for m in mechanics_mapping],
+        "owner_ids": [m.owner_id for m in mechanics_mapping],
     }
 
 
-@app.route("/mechanics/<user_id>", methods=["POST"])
-def set_user_mechanics_mapping(user_id: str) -> list[dict[str, Any]]:
+@app.route("/mechanics/<owner_id_str>", methods=["POST"])
+@login_required
+def set_user_mechanics_mapping(owner_id_str: str) -> list[dict[str, Any]]:
+    user: User = g.current_user
+
+    owner_id = uuid.UUID(owner_id_str)
+
+    if user.id != owner_id:
+        return {}, 401
+
     mechanics_service = make_mechanics_service()
-    loot_mechanics = mechanics_service.get_league_mechanics_mappings(
-        user_ids=[user_id]
-    )[0].loot_mechanics
+    mechanics_mappings = mechanics_service.get_league_mechanics_mappings(
+        filters=LeagueMechanicsFilters(owner_id={owner_id})
+    )
+
+    if not mechanics_mappings:
+        loot_mechanics = LootMechanics()
+    else:
+        loot_mechanics = mechanics_mappings[0].loot_mechanics
 
     for key, value in request.json.items():
         loot_mechanics.__setattr__(key, value)
 
-    mechanics_service.set_league_mechanics(user_id=user_id, mechanics=loot_mechanics)
+    mechanics_service.set_league_mechanics(owner_id=owner_id, mechanics=loot_mechanics)
 
-    return {
-        "status": "ok",
-    }, 200
+    return {"status": "ok"}, 200
 
 
 @app.route("/wanted_items", methods=["GET"])

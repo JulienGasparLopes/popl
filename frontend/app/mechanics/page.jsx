@@ -1,13 +1,15 @@
 import { Section } from "@/app/_components/section";
+import { getSession } from "@/app/getSession";
 import { Suspense } from "react";
 import { getMechanics } from "./getMechanics";
 import { DefaultMechanicsColumn, UserMechanicsColumn } from "./UserMechanicsColumn";
 
-const CURRENT_USER = "Cawat"
-
 const MechanicsPage = async () => {
     const mechanics = await getMechanics();
-    const users = mechanics.users_names
+    const session = await getSession()
+    const currentUserId = session?.id
+    const currentUserPseudo = session?.pseudo
+    const owner_ids = mechanics.owner_ids
     const mechanics_names = mechanics.league_mechanics
 
     return <Section name="League Mechanics">
@@ -18,10 +20,10 @@ const MechanicsPage = async () => {
                     mechanics_names.map(name => <div key={name}>{name}</div>)
                 }
             </div>
-            {!users.includes(CURRENT_USER) && <DefaultMechanicsColumn userId={CURRENT_USER} mechanicsNames={mechanics_names} />
+            {currentUserId && !owner_ids.includes(currentUserId) && <DefaultMechanicsColumn ownerId={currentUserId} ownerPseudo={currentUserPseudo} mechanicsNames={mechanics_names} />
             }
             {
-                mechanics.mechanics_mappings.map(mechanics_mapping => <UserMechanicsColumn key={mechanics_mapping.user_id} userId={mechanics_mapping.user_id} mechanicsMapping={mechanics_mapping.loot_mechanics} />)
+                mechanics.mechanics_mappings.map(mechanics_mapping => <UserMechanicsColumn key={mechanics_mapping.owner_id} updatable={mechanics_mapping.owner_id === currentUserId} ownerId={mechanics_mapping.owner_id} ownerPseudo={mechanics_mapping.pseudo} mechanicsMapping={mechanics_mapping.loot_mechanics} />)
             }
         </div>
     </Section>

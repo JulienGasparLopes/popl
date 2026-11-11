@@ -1,3 +1,4 @@
+import uuid
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -47,7 +48,7 @@ LEAGUE_OTHER_MECHANICS = list(OtherMechanics.model_fields.keys())
 
 
 class MechanicsMapping(BaseModel):
-    user_id: str
+    owner_id: uuid.UUID
 
     loot_mechanics: LootMechanics
     # other_mechanics: OtherMechanics
