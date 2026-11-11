@@ -4,7 +4,7 @@ import { Section } from "../_components/section";
 import { getWantedItems } from "./getWantedItems";
 
 const WantedItemsPage = async () => {
-  const wantedItems = await getWantedItems();
+  const wantedItems: { [itemName: string]: ItemWhish } = await getWantedItems();
 
   return (
     <Section name="Wanted Items">

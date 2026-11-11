@@ -11,4 +11,4 @@ ENV UV_NO_DEV=1
 WORKDIR /app
 RUN uv sync --locked
 
-CMD ["uv", "run", "flask", "--app", "api.main", "run", "--host=0.0.0.0"]
+CMD ["uv", "run", "flask", "--app", "backend.api.main", "run", "--host=0.0.0.0"]

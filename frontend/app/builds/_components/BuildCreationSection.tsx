@@ -28,7 +28,7 @@ export default function BuildCreationSection({ builds }: { builds: Build[] }) {
 
   const onSubmitCreateBuild = async (event: SubmitEvent<HTMLFormElement>) => {
     const data = formEventToData(event);
-    const buildId = await createBuild(data.pob_code, data.build_set_id);
+    const buildId = await createBuild(data.pob_code, data.build_set_id!);
     redirect(`/builds/${buildId}`);
   };
 

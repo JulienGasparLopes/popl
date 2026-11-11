@@ -2,7 +2,7 @@
 
 import { Tooltip } from "react-tooltip";
 
-export const ItemInfoCell = ({ itemName, wishes }: { itemName: string; wishes: object }) => {
+export const ItemInfoCell = ({ itemName, wishes }: { itemName: string; wishes: { info: { drop_text: string } } }) => {
   return (
     <div>
       <Tooltip id={`tooltip-${itemName}`}>

@@ -12,7 +12,7 @@ export const updateUserMechanics = async (userId: string, mechanicsMapping: obje
         method: 'POST',
         body: JSON.stringify(body),
         headers: {
-            Cookie: `session=${sessionCookie.value}`,
+            Cookie: `session=${sessionCookie!.value}`,
             'Content-Type': 'application/json',
         }
 

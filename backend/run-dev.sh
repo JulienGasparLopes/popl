@@ -1,1 +1,1 @@
-uv run flask --app api.main run --reload --debug
+uv run flask --app backend.api.main run --reload --debug

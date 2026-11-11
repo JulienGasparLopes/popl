@@ -17,7 +17,7 @@ from src.backend.domain.items.ports.service import ItemFilters
 
 logger = get_logger(__name__)
 
-_OUTPUT_TO_FILE = True
+_OUTPUT_TO_FILE = False
 
 _ITEM_SLOT_TO_EQUIPMENT_ATTR = {
     "Ring 1": "left_ring",
@@ -64,7 +64,7 @@ class PoBBuildService(PoBBuildServicePort):
         decompressed_xml = zlib.decompress(base64_decode).decode("utf-8")
 
         if _OUTPUT_TO_FILE:
-            with open("scripts/output.xml", mode="w") as f:
+            with open("src/backend/scripts/output.xml", mode="w") as f:
                 f.write(decompressed_xml)
             logger.info("Saved to file output.xml")
 

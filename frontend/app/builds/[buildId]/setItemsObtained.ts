@@ -11,7 +11,7 @@ export const setItemsObtained = async (buildId: string, itemsObtained: object) =
     method: 'POST',
     body: JSON.stringify(itemsObtained),
     headers: {
-      Cookie: `session=${sessionCookie.value}`,
+      Cookie: `session=${sessionCookie!.value}`,
       'Content-Type': 'application/json',
     }
   })
