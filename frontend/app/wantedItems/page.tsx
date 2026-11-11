@@ -26,13 +26,13 @@ const WantedItemsPage = async () => {
           {Object.entries(wantedItems).map(([itemName, wishes]) => {
             return (
               <tr key={itemName} className="border-b">
-                <td scope="row" className="border-l flex w-70 justify-between items-center">
+                <td scope="row" className="border-l pl-4 py-2 flex w-70 justify-between items-center">
                   {itemName}
                   <Image
                     alt={itemName}
                     src={`https://www.poewiki.net/wiki/Special:${wishes["info"]["inventory_icon"]}`}
-                    width={100}
-                    height={100}
+                    width={70}
+                    height={70}
                   />
                 </td>
                 <td className="border-l border-r text-center">{wishes["total"]}</td>
