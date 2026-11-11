@@ -1,5 +1,7 @@
+import { getSession } from "@/app/getSession";
 import { Suspense } from "react";
-import BuildListContent from "./content";
+import BuildCreationSection from "./_components/BuildCreationSection";
+import BuildsTable from "./_components/BuildsTable";
 
 const BuildListPageSuspense = async () => {
   return (
@@ -12,8 +14,14 @@ const BuildListPageSuspense = async () => {
 const BuildListPage = async () => {
   const buildListResponse = await fetch("http://127.0.0.1:5000/builds");
   const builds: Build[] = (await buildListResponse.json()).builds;
+  const session = await getSession();
 
-  return <BuildListContent builds={builds} />;
+  return (
+    <div className="flex flex-col gap-8">
+      <BuildsTable builds={builds} />
+      {session && <BuildCreationSection builds={builds} />}
+    </div>
+  );
 };
 
 export default BuildListPageSuspense;

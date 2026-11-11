@@ -23,5 +23,8 @@ type Build = {
     }
     jewels: ItemInfo[],
     gems: string[],
-    pseudo: string
+    owner: {
+        id: string;
+        pseudo: string;
+    }
 };

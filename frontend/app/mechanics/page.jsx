@@ -1,6 +1,6 @@
 import { Section } from "@/app/_components/section";
-import { getSession } from "@/app/getSession";
 import { Suspense } from "react";
+import { getSession } from "../getSession";
 import { getMechanics } from "./getMechanics";
 import { DefaultMechanicsColumn, UserMechanicsColumn } from "./UserMechanicsColumn";
 

@@ -173,7 +173,10 @@ def get_builds() -> list[dict[str, Any]]:
         "builds": [
             {
                 **build.model_dump(),
-                "pseudo": user_id_to_pseudo.get(build.owner_id),
+                "owner": {
+                    "id": build.owner_id,
+                    "pseudo": user_id_to_pseudo.get(build.owner_id),
+                },
             }
             for build in builds
         ],
@@ -184,10 +187,24 @@ def get_builds() -> list[dict[str, Any]]:
 def get_build(build_id: str) -> list[dict[str, Any]]:
     build_service = make_build_service()
     builds = build_service.get_builds(build_id=uuid.UUID(build_id))
-    assert len(builds) == 1
+    build = builds[0]
+
+    # A little bit overkill
+    user_service = make_user_service()
+    user_ids = {b.owner_id for b in builds}
+    user_id_to_pseudo = {
+        user.id: user.pseudo
+        for user in user_service.get_users(filters=UserFilters(id=user_ids))
+    }
 
     return {
-        "build": builds[0].model_dump(),
+        "build": {
+            **build.model_dump(),
+            "owner": {
+                "id": build.owner_id,
+                "pseudo": user_id_to_pseudo.get(build.owner_id),
+            },
+        },
     }, 200
 
 
@@ -222,15 +239,22 @@ def post_build() -> list[dict[str, Any]]:
     }, 200
 
 
-@app.route("/builds/<build_id>/set_items_obtained", methods=["POST"])
-def set_items_obtained(build_id: str) -> list[dict[str, Any]]:
-    items_obtained = ItemsObtained.model_validate(request.json)
+@app.route("/builds/<build_id_str>/set_items_obtained", methods=["POST"])
+@login_required
+def set_items_obtained(build_id_str: str) -> list[dict[str, Any]]:
+    build_id = uuid.UUID(build_id_str)
+    user: User = g.current_user
+
     build_service = make_build_service()
+
+    builds = build_service.get_builds(build_id=build_id)
+    if not builds or builds[0].owner_id != user.id:
+        return {}, 401
+
+    items_obtained = ItemsObtained.model_validate(request.json)
     build_service.set_item_obtained(build_id=build_id, items_obtained=items_obtained)
 
-    return {
-        "status": "ok",
-    }, 200
+    return {"status": "ok"}, 200
 
 
 @app.route("/mechanics", methods=["GET"])

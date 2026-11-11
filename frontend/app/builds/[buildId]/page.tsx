@@ -1,5 +1,6 @@
 import { Card } from "@/app/_components/card";
 import { Section } from "@/app/_components/section";
+import { getSession } from "@/app/getSession";
 import { Suspense } from "react";
 import { getBuild } from "./getBuild";
 import { RequiredItem } from "./item";
@@ -15,6 +16,9 @@ const BuildPageSuspense = async ({ params }: { params: Promise<{ buildId: string
 const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) => {
   const { buildId } = await params;
   const build = await getBuild(buildId);
+  const session = await getSession();
+  console.log(session, build);
+  const updatable = session && session.id === build.owner.id;
 
   return (
     <Section name={`${build.character_class} - ${build.character_ascendancy}`}>
@@ -36,35 +40,75 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
         </div>
         <div className="flex flex-col gap-4 grow">
           <Card title="Armors">
-            <RequiredItem buildId={build.id} name="Helmet" itemKey="helmet" itemInfo={build.equipment.helmet} />
-            <RequiredItem buildId={build.id} name="Body" itemKey="body" itemInfo={build.equipment.body} />
-            <RequiredItem buildId={build.id} name="Gloves" itemKey="gloves" itemInfo={build.equipment.gloves} />
-            <RequiredItem buildId={build.id} name="Boots" itemKey="boots" itemInfo={build.equipment.boots} />
+            <RequiredItem
+              updatable={updatable}
+              buildId={build.id}
+              name="Helmet"
+              itemKey="helmet"
+              itemInfo={build.equipment.helmet}
+            />
+            <RequiredItem
+              updatable={updatable}
+              buildId={build.id}
+              name="Body"
+              itemKey="body"
+              itemInfo={build.equipment.body}
+            />
+            <RequiredItem
+              updatable={updatable}
+              buildId={build.id}
+              name="Gloves"
+              itemKey="gloves"
+              itemInfo={build.equipment.gloves}
+            />
+            <RequiredItem
+              updatable={updatable}
+              buildId={build.id}
+              name="Boots"
+              itemKey="boots"
+              itemInfo={build.equipment.boots}
+            />
           </Card>
           <Card title="Jewellery">
             <RequiredItem
+              updatable={updatable}
               buildId={build.id}
               name="Left Ring"
               itemKey="left_ring"
               itemInfo={build.equipment.left_ring}
             />
             <RequiredItem
+              updatable={updatable}
               buildId={build.id}
               name="Right Ring"
               itemKey="right_ring"
               itemInfo={build.equipment.right_ring}
             />
-            <RequiredItem buildId={build.id} name="Amulet" itemKey="amulet" itemInfo={build.equipment.amulet} />
-            <RequiredItem buildId={build.id} name="Belt" itemKey="belt" itemInfo={build.equipment.belt} />
+            <RequiredItem
+              updatable={updatable}
+              buildId={build.id}
+              name="Amulet"
+              itemKey="amulet"
+              itemInfo={build.equipment.amulet}
+            />
+            <RequiredItem
+              updatable={updatable}
+              buildId={build.id}
+              name="Belt"
+              itemKey="belt"
+              itemInfo={build.equipment.belt}
+            />
           </Card>
           <Card title="Weapons">
             <RequiredItem
+              updatable={updatable}
               buildId={build.id}
               name="Left Hand"
               itemKey="left_hand"
               itemInfo={build.equipment.left_hand}
             />
             <RequiredItem
+              updatable={updatable}
               buildId={build.id}
               name="Right Hand"
               itemKey="right_hand"
@@ -75,7 +119,15 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
         <div className="flex flex-col gap-4 grow">
           <Card title="Jewels">
             {build.jewels.map((jewelInfo: { name: string; obtained: boolean }, index: number) => {
-              return <RequiredItem buildId={build.id} key={index} itemKey={`jewels${index}`} itemInfo={jewelInfo} />;
+              return (
+                <RequiredItem
+                  updatable={updatable}
+                  buildId={build.id}
+                  key={index}
+                  itemKey={`jewels${index}`}
+                  itemInfo={jewelInfo}
+                />
+              );
             })}
           </Card>
           {/* <Card title="Flasks">
