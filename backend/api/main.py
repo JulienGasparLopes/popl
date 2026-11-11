@@ -116,6 +116,7 @@ def login_required(func):
             logger.error(
                 "Multiple user match during token processing should NEVER happen"
             )
+            return jsonify({"error": "Unauthorized"}), 401
         if not found_users:
             session.clear()
             return jsonify({"error": "Unauthorized"}), 401
