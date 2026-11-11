@@ -4,8 +4,6 @@ from functools import wraps
 from typing import Any, cast
 
 from authlib.integrations.flask_client import OAuth
-from bson import ObjectId
-from connectors.mongo_connector import MongoConnector
 from domain.build.application_service.build_service import make_build_service
 from domain.build.ports.build_service import ItemsObtained
 from domain.items.application_service.service import ItemService, make_item_service
@@ -13,6 +11,9 @@ from domain.items.ports.service import ItemFilters
 from domain.mechanics.application_service.mechanics_service import (
     make_mechanics_service,
 )
+from domain.users.application_service.service import make_user_service
+from domain.users.model.user import User
+from domain.users.ports.service import UserFilters
 from dotenv import load_dotenv
 from flask import Flask, g, jsonify, redirect, request, session, url_for
 from flask_cors import CORS
@@ -62,22 +63,25 @@ def google_callback():
     google_id = google_user["sub"]
     email = google_user["email"]
 
-    # Find or create your internal user
-    mongo_conn = MongoConnector()
-    repository = mongo_conn.get_collection("users")
-    user = repository.find_one({"google_id": google_id})
+    user_service = make_user_service()
+    found_users = user_service.get_users(filters=UserFilters(google_id={google_id}))
+
+    user: User | None = None
+    if len(found_users) > 1:
+        print("ERROR: multiple user match during auth should NEVER happen")
+    elif found_users:
+        user = found_users[0]
 
     if not user:
-        user = {"google_id": google_id, "email": email}
-        result = repository.insert_one(user)
-        user["id"] = str(result.inserted_id)
-    else:
-        user["id"] = str(user["_id"])
-        del user["_id"]
+        user = User(
+            id=uuid.uuid4(),
+            email=email,
+            google_id=google_id,
+        )
+        user_service.create_user(user=user)
 
-    # Create your own authenticated session
     session.clear()
-    session["user_id"] = user["id"]
+    session["user_id"] = str(user.id)
 
     return redirect("http://127.0.0.1:3000/mechanics")
 
@@ -96,15 +100,18 @@ def login_required(func):
         if not user_id:
             return jsonify({"error": "Unauthorized"}), 401
 
-        mongo_conn = MongoConnector()
-        repository = mongo_conn.get_collection("users")
-        user = repository.find_one({"_id": ObjectId(user_id)})
+        user_service = make_user_service()
+        found_users = user_service.get_users(filters=UserFilters(id={user_id}))
 
-        if not user:
+        if len(found_users) > 1:
+            print(
+                "ERROR: multiple user match during token processing should NEVER happen"
+            )
+        if not found_users:
             session.clear()
             return jsonify({"error": "Unauthorized"}), 401
 
-        g.current_user = user
+        g.current_user = found_users[0]
 
         return func(*args, **kwargs)
 
@@ -114,9 +121,9 @@ def login_required(func):
 @app.route("/auth/me")
 @login_required
 def get_current_user():
-    user = g.current_user
+    user: User = g.current_user
 
-    return jsonify({"id": str(user["_id"]), "email": user["email"]})
+    return jsonify({"id": str(user.id), "email": user.email})
 
 
 @app.route("/")

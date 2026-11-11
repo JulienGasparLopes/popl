@@ -21,14 +21,6 @@ class ItemService(ItemServicePort):
 
         return [Item.model_validate(raw_item, by_name=True) for raw_item in raw_items]
 
-    def add_item(self, *, item: Item) -> None:
-        _result = self._repository.update_one(
-            {"name": item.name},
-            {"$set": item.model_dump(exclude={"id"})},
-            upsert=True,
-        )
-        # return _result.upserted_id
-
     def add_items(self, *, items: list[Item]) -> None:
         self._repository.insert_many(
             [item.model_dump(exclude={"id"}) for item in items]
