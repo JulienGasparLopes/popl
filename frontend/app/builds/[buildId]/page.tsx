@@ -17,7 +17,6 @@ const BuildPage = async ({ params }: { params: Promise<{ buildId: string }> }) =
   const { buildId } = await params;
   const build = await getBuild(buildId);
   const session = await getSession();
-  console.log(session, build);
   const updatable = session && session.id === build.owner.id;
 
   return (

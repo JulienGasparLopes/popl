@@ -17,6 +17,8 @@ class Item(BaseModel):
     drop_monsters: str | None = Field(alias="drop monsters")
     drop_text: str | None = Field(alias="drop text")
 
+    inventory_icon: str | None = Field(alias="inventory icon")
+
     acquisition_tags: str | None = Field(alias="acquisition tags")
 
     metadata_id: str | None = Field(alias="metadata id")

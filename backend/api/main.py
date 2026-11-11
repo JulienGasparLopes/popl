@@ -20,6 +20,9 @@ from domain.users.ports.service import UserFilters
 from dotenv import load_dotenv
 from flask import Flask, g, jsonify, redirect, request, session, url_for
 from flask_cors import CORS
+from log import get_logger
+
+logger = get_logger(__name__)
 
 load_dotenv()
 
@@ -71,7 +74,7 @@ def google_callback():
 
     user: User | None = None
     if len(found_users) > 1:
-        print("ERROR: multiple user match during auth should NEVER happen")
+        logger.error("Multiple user match during auth should NEVER happen")
     elif found_users:
         user = found_users[0]
 
@@ -110,8 +113,8 @@ def login_required(func):
         found_users = user_service.get_users(filters=UserFilters(id={user_id}))
 
         if len(found_users) > 1:
-            print(
-                "ERROR: multiple user match during token processing should NEVER happen"
+            logger.error(
+                "Multiple user match during token processing should NEVER happen"
             )
         if not found_users:
             session.clear()

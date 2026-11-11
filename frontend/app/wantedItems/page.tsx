@@ -1,7 +1,7 @@
+import Image from "next/image";
 import { Suspense } from "react";
 import { Section } from "../_components/section";
 import { getWantedItems } from "./getWantedItems";
-import { ItemInfoCell } from "./itemInfoCell";
 
 const WantedItemsPage = async () => {
   const wantedItems = await getWantedItems();
@@ -9,29 +9,39 @@ const WantedItemsPage = async () => {
   return (
     <Section name="Wanted Items">
       <table className="table-auto">
-        <thead>
+        <thead className="border-t">
           <tr className="border-b">
-            <th scope="col">Item</th>
             <th scope="col" className="border-l">
+              Item
+            </th>
+            <th scope="col" className="border-l border-r">
               Wishes
             </th>
-            <th scope="col" className="border-l">
+            {/* <th scope="col" className="border-l">
               Info
-            </th>
+            </th> */}
           </tr>
         </thead>
         <tbody>
           {Object.entries(wantedItems).map(([itemName, wishes]) => {
             return (
               <tr key={itemName} className="border-b">
-                <td scope="row">{itemName}</td>
-                <td className="border-l">{wishes["total"]}</td>
-                <td className="border-l" data-tooltip-id={`tooltip-${itemName}`}>
+                <td scope="row" className="border-l flex w-70 justify-between items-center">
+                  {itemName}
+                  <Image
+                    alt={itemName}
+                    src={`https://www.poewiki.net/wiki/Special:${wishes["info"]["inventory_icon"]}`}
+                    width={100}
+                    height={100}
+                  />
+                </td>
+                <td className="border-l border-r text-center">{wishes["total"]}</td>
+                {/* <td className="border-l" data-tooltip-id={`tooltip-${itemName}`}>
                   <ItemInfoCell itemName={itemName} wishes={wishes} />
                   <div>Monsters: {JSON.stringify(wishes["info"]["drop_monsters"])}</div>
                   <div>Areas: {JSON.stringify(wishes["info"]["drop_areas"])}</div>
                   <div>Tags: {JSON.stringify(wishes["info"]["acquisition_tags"])}</div>
-                </td>
+                </td> */}
               </tr>
             );
           })}

@@ -27,7 +27,7 @@ def copy_poe_wiki_data(poe_wiki_repo: Collection) -> None:
     raw_items = query_func(
         query=ResourceQuery(
             table_name="items",
-            fields="drop_areas,drop_monsters,drop_text,metadata_id,is_drop_restricted,acquisition_tags,name,rarity_id,class_id,tags",
+            fields="drop_areas,drop_monsters,drop_text,metadata_id,is_drop_restricted,acquisition_tags,name,rarity_id,class_id,tags,inventory_icon",
             filters={"rarity": "Unique", "is_in_game": "1", "drop_enabled": "1"},
         )
     )
@@ -56,6 +56,9 @@ def transform_load_items(poe_wiki_repo: Collection) -> None:
                 "drop text": (
                     html.unescape(drop_text) if drop_text is not None else None
                 ),
+                "inventory icon": html.unescape(raw_item.get("inventory icon"))
+                .replace(" ", "_")
+                .replace("File:", "FilePath/"),
             }
         )
         if RUN_AS_TEST:
