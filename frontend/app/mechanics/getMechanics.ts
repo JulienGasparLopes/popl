@@ -1,3 +1,5 @@
+"use server"
+
 import { cacheTag } from "next/cache";
 
 export const getMechanics = async () => {
@@ -10,6 +12,9 @@ export const getMechanics = async () => {
       'Content-Type': 'application/json',
     }
   })
+
+  if (!response.ok)
+    return null;
 
   return (await response.json())
 }
