@@ -1,5 +1,3 @@
-"use server"
-
 import { cookies } from "next/headers";
 
 export const getSession = async () => {
@@ -9,7 +7,7 @@ export const getSession = async () => {
   if (!sessionCookie)
     return null;
 
-  const response = await fetch('http://127.0.0.1:5000/auth/me', {
+  const response = await fetch('http://backend:5000/auth/me', {
     method: 'GET',
     headers: {
       Cookie: `session=${sessionCookie.value}`,

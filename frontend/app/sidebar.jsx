@@ -1,5 +1,7 @@
 "use client"
 
+const SERVER_URL = `${window.location.protocol}//${window.location.host}`
+
 export const Sidebar = ({ session }) => {
     return (<nav className="p-8 shadow-xl/30 min-w-60">
         <div className="grid grid-cols-1 grid-rows-[auto_auto_1fr_auto] justify-stretch h-full">
@@ -34,14 +36,14 @@ export const Sidebar = ({ session }) => {
                         <>
                             <div>Logged in as</div>
                             <div>{session.pseudo}</div>
-                            <a href="http://127.0.0.1:5000/logout">
+                            <a href={`${SERVER_URL}/logout`}>
                                 Logout
                             </a>
                         </>
 
                     ) :
                         (
-                            <a href="http://127.0.0.1:5000/auth/google/login">
+                            <a href={`${SERVER_URL}/auth/google/login`}>
                                 Sign in with Google
                             </a>
                         )

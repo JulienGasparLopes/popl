@@ -5,7 +5,7 @@ export const createBuild = async (pobCode: string, buildSetId: string) => {
     "build_set_id": buildSetId,
   }
 
-  const response = await fetch('http://127.0.0.1:5000/pob/create_build', {
+  const response = await fetch('http://backend:5000/pob/create_build', {
     method: 'POST',
     credentials: "include",
     body: JSON.stringify(body),

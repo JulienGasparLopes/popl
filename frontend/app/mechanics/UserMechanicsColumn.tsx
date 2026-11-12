@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { updateUserMechanics } from "../updateUserMechanics";
+import { updateUserMechanics } from "./updateUserMechanics";
 
 const VALUES = ["primary", "secondary", "none"];
 

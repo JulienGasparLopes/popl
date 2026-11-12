@@ -1,9 +1,7 @@
-"use client";
-
 import { Section } from "@/app/_components/section";
 import { Suspense } from "react";
 import { getSession } from "../getSession";
-import { DefaultMechanicsColumn, UserMechanicsColumn } from "./_components/UserMechanicsColumn";
+import { DefaultMechanicsColumn, UserMechanicsColumn } from "./UserMechanicsColumn";
 import { getMechanics } from "./getMechanics";
 
 const MechanicsPage = async () => {

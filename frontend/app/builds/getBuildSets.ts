@@ -2,7 +2,7 @@ export const getBuildSets = async (pobCode: string) => {
   const body = {
     "pob_code": pobCode,
   };
-  const response = await fetch('http://127.0.0.1:5000/pob/parse_build_sets', {
+  const response = await fetch('http://backend:5000/pob/parse_build_sets', {
     method: 'POST',
     credentials: "include",
     body: JSON.stringify(body),

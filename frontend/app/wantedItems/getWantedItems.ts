@@ -1,6 +1,6 @@
 
 export const getWantedItems = async () => {
-  const response = await fetch('http://127.0.0.1:5000/wanted_items', {
+  const response = await fetch('http://backend:5000/wanted_items', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
