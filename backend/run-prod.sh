@@ -6,10 +6,10 @@
 WORKERS=${1:-4}
 
 uv run gunicorn \
-  --bind 0.0.0.0:5001 \
+  --bind 0.0.0.0:5000 \
   --workers "$WORKERS" \
   --worker-class sync \
   --timeout 60 \
   --access-logfile - \
   --error-logfile - \
-  "backend.main:app"
+  "backend.api.main:app"

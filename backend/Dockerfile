@@ -1,6 +1,8 @@
 FROM python:3.13-slim-trixie
 COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /uvx /bin/
 
+ENV PATH="/app/.venv/bin:$PATH"
+
 # Copy the project into the image
 COPY . /app
 
@@ -11,4 +13,5 @@ ENV UV_NO_DEV=1
 WORKDIR /app
 RUN uv sync --locked
 
-CMD ["uv", "run", "flask", "--app", "backend.api.main", "run", "--host=0.0.0.0"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "backend.api.main:app"]
+# CMD ["uv", "run", "flask", "--app", "backend.api.main", "run", "--host=0.0.0.0"]
