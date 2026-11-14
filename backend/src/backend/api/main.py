@@ -114,6 +114,7 @@ def login_required(func):
         user_id = session.get("user_id")
 
         if not user_id:
+            logger.error("Unable to parse user_id during auth process")
             return jsonify({"error": "Unauthorized"}), 401
 
         user_service = make_user_service()

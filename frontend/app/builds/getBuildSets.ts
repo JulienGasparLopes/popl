@@ -6,12 +6,7 @@ export const getBuildSets = async (pobCode: string) => {
   };
   const response = await apiFetch("/pob/parse_build_sets", {
     method: 'POST',
-    credentials: "include",
     body: JSON.stringify(body),
-    headers: {
-      'Content-Type': 'application/json',
-    }
-
   })
 
   const data = await response.json()

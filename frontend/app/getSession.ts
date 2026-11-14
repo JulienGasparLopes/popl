@@ -1,19 +1,8 @@
 import { apiFetch } from "@/lib/api/client";
-import { cookies } from "next/headers";
 
 export const getSession = async () => {
-  const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get('session')
-
-  if (!sessionCookie)
-    return null;
-
   const response = await apiFetch("/auth/me", {
     method: 'GET',
-    headers: {
-      Cookie: `session=${sessionCookie.value}`,
-      'Content-Type': 'application/json',
-    },
     cache: "reload"
   })
 

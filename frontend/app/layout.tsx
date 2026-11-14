@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Suspense } from "react";
 import { getSession } from "./getSession";
 import "./globals.css";
-import { Sidebar } from "./sidebar";
+import { SidebarFooter } from "./SidebarFooter";
+
+export const dynamic = "force-dynamic";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,28 +21,44 @@ export const metadata: Metadata = {
   description: "Path of Private League",
 };
 
-const RootComponent = async ({ children }: { children: React.ReactNode }) => {
-  const session = await getSession();
-
-  return (
-    <>
-      <Sidebar session={session} />
-      <div className="p-16 w-full h-full overflow-scroll">{children}</div>
-    </>
-  );
-};
-
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getSession();
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex h-full overflow-hidden">
-        <Suspense fallback="Loading...">
-          <RootComponent children={children} />
-        </Suspense>
+        <nav className="p-8 shadow-xl/30 min-w-60">
+          <div className="grid grid-cols-1 grid-rows-[auto_auto_1fr_auto] justify-stretch h-full">
+            <div className="flex content-center flex-col items-center mb-16 leading-none">
+              <h1>Path</h1>
+              <h1>of</h1>
+              <h1>Private</h1>
+              <h1>League</h1>
+            </div>
+
+            <hr className="mb-16"></hr>
+
+            <div className="flex flex-col gap-4">
+              <a href="/mechanics">
+                <h2>League Mechanics</h2>
+              </a>
+
+              <a href="/builds">
+                <h2>Builds</h2>
+              </a>
+
+              <a href="/wantedItems">
+                <h2>Wish List</h2>
+              </a>
+            </div>
+
+            <SidebarFooter session={session} />
+          </div>
+        </nav>
+        <div className="p-16 w-full h-full overflow-scroll">{children}</div>
       </body>
     </html>
   );

@@ -19,7 +19,7 @@ const BuildListPage = async () => {
   return (
     <div className="flex flex-col gap-8">
       <BuildsTable builds={builds} />
-      {session && <BuildCreationSection builds={builds} />}
+      {session && <BuildCreationSection />}
     </div>
   );
 };

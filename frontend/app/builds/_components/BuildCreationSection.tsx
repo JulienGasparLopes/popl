@@ -9,7 +9,7 @@ import { SubTitle } from "../../_components/titles";
 import { createBuild } from "../createBuild";
 import { getBuildSets } from "../getBuildSets";
 
-export default function BuildCreationSection({ builds }: { builds: Build[] }) {
+export default function BuildCreationSection() {
   const [buildSetIdToName, setBuildSetIdToName] = useState<Record<string, string>>({});
   const [pobCode, setPobCode] = useState<string>("");
 
