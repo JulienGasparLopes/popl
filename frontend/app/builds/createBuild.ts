@@ -1,3 +1,5 @@
+import { apiFetch } from "@/lib/api/client"
+
 export const createBuild = async (pobCode: string, buildSetId: string) => {
 
   const body = {
@@ -5,7 +7,7 @@ export const createBuild = async (pobCode: string, buildSetId: string) => {
     "build_set_id": buildSetId,
   }
 
-  const response = await fetch('http://backend:5000/pob/create_build', {
+  const response = await apiFetch("/pob/create_build", {
     method: 'POST',
     credentials: "include",
     body: JSON.stringify(body),

@@ -1,6 +1,7 @@
+import { apiFetch } from "@/lib/api/client"
 
 export const getWantedItems = async () => {
-  const response = await fetch('http://backend:5000/wanted_items', {
+  const response = await apiFetch('/wanted_items', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

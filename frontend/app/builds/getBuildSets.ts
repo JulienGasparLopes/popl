@@ -1,8 +1,10 @@
+import { apiFetch } from "@/lib/api/client";
+
 export const getBuildSets = async (pobCode: string) => {
   const body = {
     "pob_code": pobCode,
   };
-  const response = await fetch('http://backend:5000/pob/parse_build_sets', {
+  const response = await apiFetch("/pob/parse_build_sets", {
     method: 'POST',
     credentials: "include",
     body: JSON.stringify(body),

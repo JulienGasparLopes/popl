@@ -1,12 +1,10 @@
-import { cacheTag } from "next/cache";
+import { apiFetch } from "@/lib/api/client";
 
 
 type getBuildType = (buildId: string) => Promise<Build>;
 
 export const getBuild: getBuildType = async (buildId: string) => {
-    "use cache";
-    cacheTag("build");
-    const buildResponse = await fetch(`http://backend:5000/builds/${buildId}`);
+    const buildResponse = await apiFetch(`/builds/${buildId}`);
 
     return (await buildResponse.json()).build;
 }

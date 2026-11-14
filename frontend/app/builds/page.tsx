@@ -2,6 +2,7 @@ import { getSession } from "@/app/getSession";
 import { Suspense } from "react";
 import BuildCreationSection from "./_components/BuildCreationSection";
 import BuildsTable from "./_components/BuildsTable";
+import { getBuilds } from "./getBuilds";
 
 const BuildListPageSuspense = async () => {
   return (
@@ -12,8 +13,7 @@ const BuildListPageSuspense = async () => {
 };
 
 const BuildListPage = async () => {
-  const buildListResponse = await fetch("http://backend:5000/builds");
-  const builds: Build[] = (await buildListResponse.json()).builds;
+  const builds = await getBuilds();
   const session = await getSession();
 
   return (

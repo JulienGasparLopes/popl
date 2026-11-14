@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api/client";
 import { cookies } from "next/headers";
 
 export const getSession = async () => {
@@ -7,7 +8,7 @@ export const getSession = async () => {
   if (!sessionCookie)
     return null;
 
-  const response = await fetch('http://backend:5000/auth/me', {
+  const response = await apiFetch("/auth/me", {
     method: 'GET',
     headers: {
       Cookie: `session=${sessionCookie.value}`,
