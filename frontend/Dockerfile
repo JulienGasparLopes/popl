@@ -12,13 +12,9 @@ WORKDIR /app
 # Copy package-related files first to leverage Docker's caching mechanism
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* pnpm-workspace.yaml* .npmrc* ./
 
-# Add corepack as it is no longer part of the image
-RUN npm install -g corepack
-RUN corepack enable
-RUN corepack cache clean
-
 # Install project dependencies with frozen lockfile for reproducible builds
-RUN corepack enable pnpm && pnpm install --frozen-lockfile;
+RUN npm install -g pnpm@12.19.0
+RUN pnpm install --frozen-lockfile;
 
 # ============================================
 # Stage 2: Build Next.js application in standalone mode
@@ -48,10 +44,8 @@ ENV NODE_ENV=production
 # This caches the .next/cache directory across builds, but it also prevents
 # .next/cache/fetch-cache from being included in the final image, meaning
 # cached fetch responses from the build won't be available at runtime.
-RUN npm install -g corepack
-RUN corepack enable
-RUN corepack cache clean
-RUN corepack enable pnpm && pnpm build
+RUN npm install -g pnpm@12.19.0
+RUN pnpm build
 
 # ============================================
 # Stage 3: Run Next.js application
