@@ -29,6 +29,9 @@ export default async function RootLayout({
   const session = await getSession();
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <head>
+        <meta name="google-site-verification" content="2Adbh_n1Rgal41AZRTAirB3EoSzYyU8QUIqLnem4djE" />
+      </head>
       <body className="min-h-full flex h-full overflow-hidden">
         <nav className="p-8 shadow-xl/30 min-w-60">
           <div className="grid grid-cols-1 grid-rows-[auto_auto_1fr_auto] justify-stretch h-full">
