@@ -39,8 +39,9 @@ CORS(app, origins=["http://127.0.0.1:3000"], supports_credentials=True)
 app.config.update(
     SESSION_COOKIE_NAME="session",
     SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SECURE=False,  # True in production with HTTPS
+    SESSION_COOKIE_SECURE=True,  # True in production with HTTPS
     SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_PATH="/",
     SESSION_COOKIE_DOMAIN=None,
 )
 
