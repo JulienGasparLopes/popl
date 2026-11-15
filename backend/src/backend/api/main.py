@@ -5,7 +5,7 @@ from typing import Any, cast
 
 from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
-from flask import Flask, g, jsonify, redirect, request, session, url_for
+from flask import Flask, g, jsonify, redirect, request, session
 from flask_cors import CORS
 from log import get_logger
 from src.backend.domain.build.application_service.build_service import (
@@ -33,13 +33,15 @@ logger = get_logger(__name__)
 
 load_dotenv()
 
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+
 app = Flask(__name__)
-CORS(app, origins=["http://127.0.0.1:3000"], supports_credentials=True)
+CORS(app, origins=[FRONTEND_URL], supports_credentials=True)
 
 app.config.update(
     SESSION_COOKIE_NAME="session",
     SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SECURE=True,  # True in production with HTTPS
+    SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_SAMESITE="Lax",
     SESSION_COOKIE_PATH="/",
     SESSION_COOKIE_DOMAIN=None,
@@ -63,9 +65,7 @@ oauth.register(
 # ----- LOGIN -----
 @app.route("/auth/google/login")
 def google_login():
-    redirect_uri = url_for("google_callback", _external=True)
-
-    return oauth.google.authorize_redirect(redirect_uri)
+    return oauth.google.authorize_redirect(f"{FRONTEND_URL}/api/auth/google/callback")
 
 
 @app.route("/auth/google/callback")
@@ -100,13 +100,13 @@ def google_callback():
     session.clear()
     session["user_id"] = str(user.id)
 
-    return redirect("http://127.0.0.1:3000/mechanics")
+    return redirect(f"{FRONTEND_URL}/mechanics")
 
 
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect("http://127.0.0.1:3000/mechanics")
+    return redirect(f"{FRONTEND_URL}/mechanics")
 
 
 def login_required(func):

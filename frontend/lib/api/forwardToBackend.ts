@@ -14,6 +14,7 @@ export async function forwardToBackend(
     if (cookie) headers.set("cookie", cookie);
 
     const url = new URL(path, backendUrl);
+    url.search = new URL(request.url).search;
 
     const response = await fetch(url, {
         method: request.method,

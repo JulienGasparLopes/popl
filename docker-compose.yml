@@ -19,6 +19,7 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       FLASK_AUTH_SECRET_KEY: ${FLASK_AUTH_SECRET_KEY}
+      FRONTEND_URL: ${FRONTEND_URL}
 
   frontend:
     container_name: frontend
